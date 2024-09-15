@@ -1,0 +1,64 @@
+// Prim's Algorithm in TypeScript
+class Prim {
+    private graph: number[][];
+    private vertices: number;
+
+    constructor(graph: number[][]) {
+        this.graph = graph;
+        this.vertices = graph.length;
+    }
+
+    private minKey(key: number[], mstSet: boolean[]): number {
+        let min = Infinity, minIndex = -1;
+
+        for (let v = 0; v < this.vertices; v++) {
+            if (!mstSet[v] && key[v] < min) {
+                min = key[v];
+                minIndex = v;
+            }
+        }
+        return minIndex;
+    }
+
+    public primMST(): void {
+        const parent = Array(this.vertices).fill(-1);
+        const key = Array(this.vertices).fill(Infinity);
+        const mstSet = Array(this.vertices).fill(false);
+
+        key[0] = 0;
+        parent[0] = -1;
+
+        for (let count = 0; count < this.vertices - 1; count++) {
+            const u = this.minKey(key, mstSet);
+            mstSet[u] = true;
+
+            for (let v = 0; v < this.vertices; v++) {
+                if (this.graph[u][v] && !mstSet[v] && this.graph[u][v] < key[v]) {
+                    parent[v] = u;
+                    key[v] = this.graph[u][v];
+                }
+            }
+        }
+
+        this.printMST(parent);
+    }
+
+    private printMST(parent: number[]): void {
+        console.log("Edge \tWeight");
+        for (let i = 1; i < this.vertices; i++) {
+            console.log(`${parent[i]} - ${i} \t${this.graph[i][parent[i]]}`);
+        }
+    }
+}
+
+// Example usage
+const graph = [
+    [0, 2, 0, 6, 0],
+    [2, 0, 3, 8, 5],
+    [0, 3, 0, 0, 7],
+    [6, 8, 0, 0, 9],
+    [0, 5, 7, 9, 0]
+];
+
+const prim = new Prim(graph);
+prim.primMST();
